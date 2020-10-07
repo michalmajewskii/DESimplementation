@@ -40,7 +40,7 @@ public class Main{
             int i;
             String keys[] = des.getKeys(key);
             String encriptedText = des.permutation(des.initialTable, msg); //wywołanie Permutacji Początkowej IP
-            for (i = 0; i < 16; i++) {
+            for (i = 0; i < 16; i++) { //16 rund
                 encriptedText = des.round(encriptedText, keys[i], i);
             }
             encriptedText = encriptedText.substring(8, 16) + encriptedText.substring(0, 8);
