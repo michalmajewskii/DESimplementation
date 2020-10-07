@@ -39,7 +39,7 @@ public class Main{
             String key = generator.generate();
             int i;
             String keys[] = des.getKeys(key);
-            String encriptedText = des.permutation(des.initialTable, msg);
+            String encriptedText = des.permutation(des.initialTable, msg); //wywołanie Permutacji Początkowej IP
             for (i = 0; i < 16; i++) {
                 encriptedText = des.round(encriptedText, keys[i], i);
             }

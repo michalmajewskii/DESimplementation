@@ -1,7 +1,10 @@
 package com.company;
 import java.util.*;
 public class DES {
-
+            //Permutacja początkowa IP.
+            //Polega na 'pomieszaniu' kolejnosci bitow wprowadzonego tekstu.
+            //Zastepuje pierwszy bit wprowadzonego tekstu, bitem 58 tego samego tekstu.
+            //drugi bit wprowadzonego tekstu jest zastepowany 50 bitem tego tekstu i tak dalej...
             int[] initialTable = { 58, 50, 42, 34, 26, 18,
                     10, 2, 60, 52, 44, 36, 28, 20,
                     12, 4, 62, 54, 46, 38,
@@ -93,6 +96,8 @@ public class DES {
             int[] shiftBits = { 1, 1, 2, 2, 2, 2, 2, 2,
                     1, 2, 2, 2, 2, 2, 2, 1 };
 
+
+            //funkcja przekszatalcajaca zapis szesnastkowy na binarny
             String hextoBin(String input)
             {
                 int n = input.length() * 4;
@@ -103,6 +108,8 @@ public class DES {
                 return input;
             }
 
+
+            // //funkcja przekszatalcajaca zapis binarny na szesnastkowy
             String binToHex(String input)
             {
                 int n = (int)input.length() / 4;
@@ -114,16 +121,18 @@ public class DES {
             }
 
 
+            //funkcja wykonująca zadane permutacje tekstu z danymi
             String permutation(int[] sequence, String input)
             {
                 String output = "";
-                input = hextoBin(input);
+                input = hextoBin(input); //zmiana 'formy' danych z postaci szesnastkowej na binarna
                 for (int i = 0; i < sequence.length; i++)
-                    output += input.charAt(sequence[i] - 1);
+                    output += input.charAt(sequence[i] - 1); //działanie permutacji
                 output = binToHex(output);
                 return output;
             }
 
+            //realizacja funkcji xor
             String xor(String a, String b)
             {
                 long t_a = Long.parseUnsignedLong(a, 16);
@@ -139,16 +148,20 @@ public class DES {
             {
                 int n = input.length() * 4;
                 int perm[] = new int[n];
-                for (int i = 0; i < n - 1; i++)
+                for (int i = 0; i < n - 1; i++) {
                     perm[i] = (i + 2);
+                    System.out.print(perm[i] + " ");
+                }
                 perm[n - 1] = 1;
                 while (numBits-- > 0)
                     input = permutation(perm, input);
                 return input;
             }
 
+            //funkcja tworzaca 16 kluczy z wygenerowanych liczb
             String[] getKeys(String key)
             {
+                //stworzenie nowego klucza w sposob taki, ze kazdy bit klucza przesuwany o 8 bitow
                 String keys[] = new String[16];
                 key = permutation(firstKeyTable, key);
                 for (int i = 0; i < 16; i++) {
@@ -156,10 +169,11 @@ public class DES {
                             key.substring(0, 7), shiftBits[i])
                             + leftCircularShift(key.substring(7, 14),
                             shiftBits[i]);
-                    keys[i] = permutation(secondKeyTable, key);
+                    keys[i] = permutation(secondKeyTable, key); //permutacja dla nowego klucza
                 }
                 return keys;
             }
+
 
             String sBox(String input)
             {
@@ -180,14 +194,15 @@ public class DES {
 
             String round(String input, String key, int num)
             {
+                //podzial wejscia na czesc lewa i prawa
                 String left = input.substring(0, 8);
                 String temp = input.substring(8, 16);
                 String right = temp;
-                temp = permutation(expansionTable, temp);
+                temp = permutation(expansionTable, temp); //zastosowanie rozszerzonej permutacji. Oprocz zwiększania liczby bitow, ciag jest rowniez permutowany
                 temp = xor(temp, key);
                 temp = sBox(temp);
                 temp = permutation(permutationTable, temp);
-                left = xor(left, temp);
+                left = xor(left, temp); //polaczenie czesci prawej i lewej oraz realizacja finalnej permutacji FP
                 return right + left;
             }
 }
